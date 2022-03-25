@@ -15,11 +15,12 @@ $component = (string) null; // quem esta fazendo a requisição
 
 
 // validação para verificar se a requisição é um POST de um formulario
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET") {
     
     // recebendo dados da url para saber quem esta solicitando e qual ação deve ser realizado
     $component = strtoupper($_GET["component"]); 
     $action = strtoupper($_GET["action"]);
+    
 
     // Estrutura para validar quem esta solicitando algo para o router
     switch ($component) {
@@ -43,11 +44,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                           </script>";                   
 
                 } 
-            }
-            break;
+            } else if ($action == "DELETAR") {
+                $idContato = (int) $_GET["id"];
+                
+                $res = excluirContato($idContato);
 
-        default:
-            echo "ERROR: invalid component";
-            break;
+                if (is_bool($res) && $res == true) {
+                    echo "<script>
+                            alert('Contato excluido com sucesso');
+                            window.location.href = 'index.php';
+                          </script>"; 
+                } else if ( is_array($res) ) {
+                     echo "<script>
+                            alert('Erro: " . $res["message"] . "');
+                            window.history.back();
+                          </script>";                   
+
+                } 
+            } 
     } 
 }

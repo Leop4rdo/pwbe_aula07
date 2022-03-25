@@ -65,7 +65,27 @@ function atualizarContato(){
 /**
  * Excluir contatos atravez dos dados recebidos pela view
  */
-function excluirContato(){
+function excluirContato($id){
+    // impedindo a execução da função caso o id seja igual a 0, inexistente ou não-numerico
+    if ( $id == 0 || empty($id) || !is_numeric($id) ) {
+        return array(
+            "idErro"    => 4,
+            "message"   => "Impossivel deletar contato com id Invalido"
+        );
+    }
+
+
+    // import do arquivo de modelagem para manipulação do BD
+    require_once("model/bd/contato.php");
+
+    if ( deleteContato($id) ) {
+        return true;     
+    } else {
+        return array(
+            "idErro"    => 3,
+            "message"   => "Impossivel deletar contato"
+        );     
+    };    
 }
 
 /**

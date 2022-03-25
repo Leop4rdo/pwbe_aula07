@@ -16,8 +16,6 @@ const USER = "root";
 const PASSWORD = "bcd127";
 const DATABASE = "db_contatos";
 
-$resultado = abrirConexaoMysql();
-
 /**
  * Abre a conexão com o banco de dados MySQL
  *
@@ -48,5 +46,12 @@ function abrirConexaoMysql() {
 // 	
 // 	- PDO() - versão mais completa, segura e eficiente, porem é
 // 			utilizada apenas com orientação a objetos. 
+
+/**
+ *Fecha a conexão com o BD MySQL
+ */
+function fecharConexaoMysql($conexao) {
+     mysqli_close($conexao);
+}
 
 ?>
