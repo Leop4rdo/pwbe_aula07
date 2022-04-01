@@ -16,7 +16,6 @@
  * Inserir novos contatos atravez dos dados recebidos pela view
  */
 function inserirContato( $dadosContato ){
-    
     // impede a execução desta função quando $dadosContato for vazio
     if ( !empty($dadosContato) ) {
 
@@ -96,6 +95,27 @@ function listarContato(){
     
     $res = selectAllContatos();
 
+    if ( !empty($res) ) {
+        return $res;
+    } else {
+        return false;
+    }
+}
+
+/** busca um contato atravez do id */
+function buscarContato($id) {
+    // impedindo a execução da função caso o id seja igual a 0, inexistente ou não-numerico
+    if ( $id == 0 || empty($id) || !is_numeric($id) ) {
+        return array(
+            "idErro"    => 4,
+            "message"   => "Impossivel buscar contato com id Invalido"
+        );
+    }    
+
+    require_once("model/bd/contato.php");
+
+    $res =  selectContatoById($id);
+    
     if ( !empty($res) ) {
         return $res;
     } else {

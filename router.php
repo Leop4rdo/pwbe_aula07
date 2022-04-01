@@ -27,10 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
         case "CONTATOS":
             require_once("./controller/controllerContatos.php");
 
-            $res = inserirContato($_POST);
             
             // validação para indentificar o tipo de ação que será realizada 
             if ($action == "INSERIR") {
+                $res = inserirContato($_POST);
+                
                 if ( is_bool($res) && $res == true ) { 
                     echo "<script>
                             alert('Contato inserido com sucesso');
@@ -47,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
             } else if ($action == "DELETAR") {
                 $idContato = (int) $_GET["id"];
                 
+                // chama a função de excluir na controller 
                 $res = excluirContato($idContato);
 
                 if (is_bool($res) && $res == true) {
@@ -61,6 +63,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
                           </script>";                   
 
                 } 
+            } else if ($action == "BUSCAR") {
+                $idContato = $_GET["id"];
+                 
+                $res = buscarContato($idContato);
+                                 
+                // ativando recurso de variavel de sessão
+                // pois o apache deixa ela desativada por padrão
+                //
+                // essa variavel de sessão vai ser usada para 
+                // popular o formulario da index.php
+                 
+                session_start(); // inicia o recurso
+                 
+                $_SESSION["dadosContato"] = $res; // cria uma nova variavel de sessão com o nome "dadosContato".
+
+                require_once("index.php");
             } 
+
+            break;
     } 
 }

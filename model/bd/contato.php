@@ -95,5 +95,35 @@ function deleteContato($id){
     return $statusRes;
 }
 
+/**
+ * busca um contato no banco de dados apartir de um id
+ *
+ * @return  contato
+ */
+function selectContatoById($id) {
+    $conexao = abrirConexaoMysql();
+
+    $sqlQuerry = "select * from tbl_contato where id_contato=$id";
+
+    $res = mysqli_query($conexao, $sqlQuerry);
+
+    if ( $res ) {
+
+        if ($resData = mysqli_fetch_assoc($res)) {
+            $resArray = array(
+                "id"         => $resData["id_contato"],
+                "nome"       => $resData["nome"],
+                "telefone"   => $resData["telefone"],
+                "celular"    => $resData["celular"],
+                "email"      => $resData["email"],
+                "obs"        => $resData["obs"]
+            );
+        }
+
+        fecharConexaoMysql($conexao);
+
+        return $resArray;
+    }    
+}
 
 ?>
