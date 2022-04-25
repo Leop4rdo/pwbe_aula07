@@ -1,22 +1,26 @@
 <?php
 
-$id = (int) 0;
-$nome = (string) "";
-$telefone = (string) "";
-$celular = (string) "";
-$email = (string) "";
-$obs = (string) "";
+$actionFormCadastro = (string) "router.php?component=contatos&action=inserir";
 
 // verifica se o recurso de variaveis de sessão esta ativado
 // e se a variavel "dadosContato" existe
 // apartir disso ele preenche as variaveis locais
-if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
-    $id         =   $_SESSION["dadosContato"]["id"];
-    $nome       =   $_SESSION["dadosContato"]["nome"];
-    $telefone   =   $_SESSION["dadosContato"]["telefone"];
-    $celular    =   $_SESSION["dadosContato"]["celular"];
-    $email      =   $_SESSION["dadosContato"]["email"];
-    $obs        =   $_SESSION["dadosContato"]["obs"];
+if ( session_status()) {
+    if ( !empty($_SESSION["dadosContato"]) ) {
+        $id         =   $_SESSION["dadosContato"]["id"];
+        $nome       =   $_SESSION["dadosContato"]["nome"];
+        $telefone   =   $_SESSION["dadosContato"]["telefone"];
+        $celular    =   $_SESSION["dadosContato"]["celular"];
+        $email      =   $_SESSION["dadosContato"]["email"];
+        $obs        =   $_SESSION["dadosContato"]["obs"];
+
+        $actionFormCadastro = "router.php?component=contatos&action=editar&id=$id";
+
+        //destroy uma variavel
+        unset($_SESSION["dadosContato"]);
+    }
+
+    
 }
 
 ?>
@@ -36,14 +40,15 @@ if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
                 
             </div>
             <div id="cadastroInformacoes">
-                <form  action="router.php?component=contatos&action=inserir" name="frmCadastro" method="post" >
+                <!-- enctype="multipart/form-data" é obrigatorio para enviar arquivos do formulario para o servidor -->
+                <form  action="<?= $actionFormCadastro ?>" name="frmCadastro" method="post"  enctype="multipart/form-data" >
                     <div class="campos">
                         <div class="cadastroInformacoesPessoais">
                             <label> Nome: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
                             <input autocomplete="off" type="text" name="txtNome" 
-                                value="<?= $nome ?>" placeholder="Digite seu Nome" maxlength="100">
+                                value="<?= isset($nome)?$nome:null ?>" placeholder="Digite seu Nome" maxlength="100">
                         </div>
                     </div>
                                      
@@ -52,7 +57,7 @@ if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
                             <label> Telefone: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
-                        <input autocomplete="off" type="tel" name="txtTelefone" value="<?= $telefone ?>">
+                        <input autocomplete="off" type="tel" name="txtTelefone" value="<?= isset($telefone)?$telefone:null ?>">
                         </div>
                     </div>
                     <div class="campos">
@@ -60,7 +65,7 @@ if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
                             <label> Celular: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
-                            <input autocomplete="off" type="tel" name="txtCelular" value="<?= $celular ?>">
+                            <input autocomplete="off" type="tel" name="txtCelular" value="<?= isset($celular)?$celular:null ?>">
                         </div>
                     </div>
                    
@@ -70,7 +75,16 @@ if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
                             <label> Email: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
-                            <input autocomplete="off" type="email" name="txtEmail" value="<?= $email ?>">
+                            <input autocomplete="off" type="email" name="txtEmail" value="<?= isset($email)?$email:null ?>">
+                        </div>
+                    </div>
+                    <div class="campos">
+                        <div class="cadastroInformacoesPessoais">
+                            <label> Escolha um arquivo: </label>
+                        </div>
+                        <div class="cadastroEntradaDeDados">
+                            
+                            <input type="file" name="fileFoto" accept=".jpg, .jpeg, .png, .gif,">
                         </div>
                     </div>
                     <div class="campos">
@@ -78,9 +92,10 @@ if ( session_status() &&  !empty($_SESSION["dadosContato"]) ) {
                             <label> Observações: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
-                        <textarea name="txtObs" cols="50" rows="7" ><?= $obs ?></textarea>
+                        <textarea name="txtObs" cols="50" rows="7" ><?= isset($obs)?$obs:null ?></textarea>
                         </div>
                     </div>
+                    
                     <div class="enviar">
                         <div class="enviar">
                             <input type="submit" name="btnEnviar" value="Salvar">

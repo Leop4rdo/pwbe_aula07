@@ -22,18 +22,20 @@ const DATABASE = "db_contatos";
  * @return array	conexão
  */
 function abrirConexaoMysql() {        
-	$conexao = array();
+	//$conexao = (mysqli) ;
 
 	// se a conexão for estabelecida com o BD, iremos ter um array
 	// de dados sobre a conexão.  
 	$conexao = mysqli_connect(SERVER, USER, PASSWORD, DATABASE);
 
-	// validação para verificar se conexão foi realizada com sucesso
-	if ($conexao) {
-		return $conexao;
-	} else {
-		return false;
-	}
+	// // validação para verificar se conexão foi realizada com sucesso
+	// if ($conexao) {
+	// 	return $conexao;
+	// } else {
+	// 	return false;
+	// }
+
+	return ($conexao)?$conexao:false;
 }
 
 // Existem 3 formas de criar conexão com BD MySQL no PHP ->

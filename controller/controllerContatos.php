@@ -15,12 +15,20 @@
 /**
  * Inserir novos contatos atravez dos dados recebidos pela view
  */
-function inserirContato( $dadosContato ){
+function inserirContato( $dadosContato, $file ){
     // impede a execução desta função quando $dadosContato for vazio
     if ( !empty($dadosContato) ) {
 
         // verifica se os campos obrigatorios foram preenchidos, não permitindo a execução caso não foram
         if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"]) ) {
+            
+            if ($file != null) {
+                require_once "modulo/uploadFile.php";
+
+                $res = uploadFile($file["fileFoto"]);
+                
+            }
+            
             // array que sera encaminhado para a model para ser inserido no DB.
             $contato = array(
                 "nome"      => $dadosContato["txtNome"],
@@ -29,6 +37,7 @@ function inserirContato( $dadosContato ){
                 "email"     => $dadosContato["txtEmail"],
                 "obs"       => $dadosContato["txtObs"] 
             );
+            
 
 
             // import do arquivo de modelagem para manipular o BD
@@ -58,7 +67,53 @@ function inserirContato( $dadosContato ){
 /**
  * Atualizar os contatos atravez dos dados recebidos pela view
  */
-function atualizarContato(){
+function atualizarContato($dadosContato, $id){
+     // impede a execução desta função quando $dadosContato for vazio
+     if ( !empty($dadosContato) ) {
+
+        // verifica se os campos obrigatorios foram preenchidos, não permitindo a execução caso não foram
+        if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"])) {
+            if (!empty($id) && is_numeric($id) && $id > 0) {
+
+                // array que sera encaminhado para a model para ser inserido no DB.
+                $contato = array(
+                    "id"        => $id,
+                    "nome"      => $dadosContato["txtNome"],
+                    "telefone"  => $dadosContato["txtTelefone"],
+                    "celular"   => $dadosContato["txtCelular"],
+                    "email"     => $dadosContato["txtEmail"],
+                    "obs"       => $dadosContato["txtObs"] 
+                );
+
+
+                // import do arquivo de modelagem para manipular o BD
+                require_once("model/bd/contato.php");
+
+                // Chama a função que fara o insert no BD apartir da camada Model
+                if ( updateContato($contato) ) {
+                    return true;
+                } else {
+                    // retornando mensagem de erro
+                    return array(
+                        "idErro" => 1,
+                        "message" => "não foi possivel editar os dados no banco de dados"
+                    );
+                }
+            } else {
+                return array(
+                    "idErro" => 4,
+                    "message" => "não foi possivel editar os dados sem informar um id valido"
+                );
+            }
+        } else {
+
+            // retornando mensagem de erro de dados incompletos
+            return array(
+                "idErro"    => 2,
+                "message"   => "Impossivel realizar edição por causa da falta dos dados obrigatorios"
+            );
+        }
+    }
 }
 
 /**

@@ -42,7 +42,32 @@ function insertContato($dadosContato) {
 }   
 
 /** atualiza um contato no DB */
-function updateContato(){
+function updateContato($contato){
+    $conexao = abrirConexaoMysql();
+
+    // montando instrução sql que será executada para inserir um contato no DB
+    $sqlQuery = "update tbl_contato set 
+                    nome        =   '". $contato["nome"]."', 
+                    telefone    =   '". $contato["telefone"] ."', 
+                    celular     =   '". $contato["celular"] ."', 
+                    email       =   '". $contato["email"] ."',
+                    obs         =   '". $contato["obs"] ."'
+                    where id_contato=". $contato["id"];
+    
+    /** responsavel por guardar o status da resposta do banco */ 
+    $statusRes = (boolean) false;
+
+    // executa uma instrução no bd verificando se ela esta correta
+    if ( mysqli_query($conexao, $sqlQuery) ) {
+        if ( mysqli_affected_rows($conexao) ) {
+            $statusRes = true;
+        }
+    }
+
+
+    fecharConexaoMysql($conexao); // fechando conexão
+
+    return $statusRes;
 }
 
 /** Lista todos os contatos do DB */
@@ -53,7 +78,6 @@ function selectAllContatos(){
 
     $res = mysqli_query($conexao, $sqlQuerry);
     
-
     if ( $res ) {
         $cont = 0;
         // convertendo a resposta do BD para array
@@ -103,9 +127,9 @@ function deleteContato($id){
 function selectContatoById($id) {
     $conexao = abrirConexaoMysql();
 
-    $sqlQuerry = "select * from tbl_contato where id_contato=$id";
+    $sqlQuery = "select * from tbl_contato where id_contato=$id";
 
-    $res = mysqli_query($conexao, $sqlQuerry);
+    $res = mysqli_query($conexao, $sqlQuery);
 
     if ( $res ) {
 

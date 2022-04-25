@@ -16,7 +16,6 @@ $component = (string) null; // quem esta fazendo a requisição
 
 // validação para verificar se a requisição é um POST de um formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET") {
-    
     // recebendo dados da url para saber quem esta solicitando e qual ação deve ser realizado
     $component = strtoupper($_GET["component"]); 
     $action = strtoupper($_GET["action"]);
@@ -30,7 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
             
             // validação para indentificar o tipo de ação que será realizada 
             if ($action == "INSERIR") {
-                $res = inserirContato($_POST);
+                if (isset($_FILES) && !empty($_FILES)) {
+                    $res = inserirContato($_POST, $_FILES);
+                } else {
+
+                    $res = inserirContato($_POST, null);
+                }
                 
                 if ( is_bool($res) && $res == true ) { 
                     echo "<script>
@@ -79,7 +83,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
                 $_SESSION["dadosContato"] = $res; // cria uma nova variavel de sessão com o nome "dadosContato".
 
                 require_once("index.php");
-            } 
+            } else if ($action == "EDITAR") {
+                $idContato = (int) $_GET["id"];
+
+                $res = atualizarContato($_POST, $idContato);
+
+                if (is_bool($res) && $res == true) {
+                    echo "<script>
+                            alert('Contato editado com sucesso');
+                            window.location.href = 'index.php';
+                          </script>"; 
+                } else if ( is_array($res) ) {
+                    echo "<script>
+                           alert('Erro: " . $res["message"] . "');
+                           window.history.back();
+                         </script>";                   
+
+               } 
+            }
 
             break;
     } 
