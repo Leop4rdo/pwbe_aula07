@@ -50,10 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
 
                 } 
             } else if ($action == "DELETAR") {
-                $idContato = (int) $_GET["id"];
                 
+
                 // chama a função de excluir na controller 
-                $res = excluirContato($idContato);
+                $res = excluirContato(array("id" =>  $_GET["id"], "foto" => $_GET["foto"]));
 
                 if (is_bool($res) && $res == true) {
                     echo "<script>
@@ -84,9 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $_SERVER["REQUEST_METHOD"] == "GET")
 
                 require_once("index.php");
             } else if ($action == "EDITAR") {
-                $idContato = (int) $_GET["id"];
+                $body = array(
+                    "id"    => (int) $_GET["id"],
+                    "foto"  => (string) $_GET["foto"],
+                    "file"  => $_FILES
+                );
 
-                $res = atualizarContato($_POST, $idContato);
+                $res = atualizarContato($_POST, $body);
 
                 if (is_bool($res) && $res == true) {
                     echo "<script>

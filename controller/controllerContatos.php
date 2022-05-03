@@ -16,16 +16,22 @@
  * Inserir novos contatos atravez dos dados recebidos pela view
  */
 function inserirContato( $dadosContato, $file ){
+    $imgName = (string) null;
+
     // impede a execução desta função quando $dadosContato for vazio
     if ( !empty($dadosContato) ) {
 
         // verifica se os campos obrigatorios foram preenchidos, não permitindo a execução caso não foram
         if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"]) ) {
             
-            if ($file != null) {
+            // identificando se um arquivo foi enviado para upload
+            if ($file["fileFoto"]["name"] != null) {
                 require_once "modulo/uploadFile.php";
 
-                $res = uploadFile($file["fileFoto"]);
+                $imgName = uploadFile($file["fileFoto"]);
+
+                // se o retorno da função uploadFile() for uma mensagem de erro:
+                if ( is_array($imgName) ) return $imgName;
                 
             }
             
@@ -35,7 +41,8 @@ function inserirContato( $dadosContato, $file ){
                 "telefone"  => $dadosContato["txtTelefone"],
                 "celular"   => $dadosContato["txtCelular"],
                 "email"     => $dadosContato["txtEmail"],
-                "obs"       => $dadosContato["txtObs"] 
+                "obs"       => $dadosContato["txtObs"], 
+                "foto"      => $imgName
             );
             
 
@@ -67,13 +74,31 @@ function inserirContato( $dadosContato, $file ){
 /**
  * Atualizar os contatos atravez dos dados recebidos pela view
  */
-function atualizarContato($dadosContato, $id){
-     // impede a execução desta função quando $dadosContato for vazio
-     if ( !empty($dadosContato) ) {
+function atualizarContato($dadosContato, $body){
+    $id     =   $body["id"];
+    $foto   =   $body["foto"];
+    $file   =   $body["file"];
+
+    // impede a execução desta função quando $dadosContato for vazio
+    if ( !empty($dadosContato) ) {
 
         // verifica se os campos obrigatorios foram preenchidos, não permitindo a execução caso não foram
         if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"])) {
             if (!empty($id) && is_numeric($id) && $id > 0) {
+
+                // identificando se um arquivo foi enviado para upload
+                if ($file["fileFoto"]["name"] != null) {
+                    require_once "modulo/uploadFile.php";
+
+                    $newImgName = uploadFile($file["fileFoto"]);
+
+                    // se o retorno da função uploadFile() for uma mensagem de erro:
+                    if ( is_array($newImgName) ) return $newImgName;    
+
+                    @unlink($foto);
+                } else {
+                    $newImgName = $foto;
+                }
 
                 // array que sera encaminhado para a model para ser inserido no DB.
                 $contato = array(
@@ -82,7 +107,8 @@ function atualizarContato($dadosContato, $id){
                     "telefone"  => $dadosContato["txtTelefone"],
                     "celular"   => $dadosContato["txtCelular"],
                     "email"     => $dadosContato["txtEmail"],
-                    "obs"       => $dadosContato["txtObs"] 
+                    "obs"       => $dadosContato["txtObs"] ,
+                    "foto"      => $newImgName
                 );
 
 
@@ -119,7 +145,11 @@ function atualizarContato($dadosContato, $id){
 /**
  * Excluir contatos atravez dos dados recebidos pela view
  */
-function excluirContato($id){
+function excluirContato($body){
+    $id = (int) $body["id"];
+    $foto = (string) $body["foto"];
+
+
     // impedindo a execução da função caso o id seja igual a 0, inexistente ou não-numerico
     if ( $id == 0 || empty($id) || !is_numeric($id) ) {
         return array(
@@ -133,7 +163,17 @@ function excluirContato($id){
     require_once("model/bd/contato.php");
 
     if ( deleteContato($id) ) {
-        return true;     
+        if ($foto != null) {
+            if (unlink($foto)) {
+                return true;
+            } else {
+                return array(
+                    "idErro"    => 5,
+                    "message"   => "Contato excluido com sucesso, porem a imagem não foi excluída do servidor"
+                );  
+            }
+        }
+  
     } else {
         return array(
             "idErro"    => 3,

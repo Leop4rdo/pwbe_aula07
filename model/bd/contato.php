@@ -18,12 +18,13 @@ function insertContato($dadosContato) {
     $conexao = abrirConexaoMysql();
 
     // montando instrução sql que será executada para inserir um contato no DB
-    $sqlQuerry = "insert into tbl_contato (nome, telefone, celular, email, obs) 
+    $sqlQuerry = "insert into tbl_contato (nome, telefone, celular, email, obs, foto) 
 	                values ('". $dadosContato["nome"] ."', 
                         '". $dadosContato["telefone"] ."', 
                         '". $dadosContato["celular"] ."', 
                         '". $dadosContato["email"] ."', 
-                        '". $dadosContato["obs"] ."');";
+                        '". $dadosContato["obs"] ."',
+                        '". $dadosContato["foto"]."');";
     
     /** responsavel por guardar o status da resposta do banco */ 
     $statusRes = (boolean) false;
@@ -51,7 +52,8 @@ function updateContato($contato){
                     telefone    =   '". $contato["telefone"] ."', 
                     celular     =   '". $contato["celular"] ."', 
                     email       =   '". $contato["email"] ."',
-                    obs         =   '". $contato["obs"] ."'
+                    obs         =   '". $contato["obs"] ."',
+                    foto        =   '". $contato["foto"] ."'
                     where id_contato=". $contato["id"];
     
     /** responsavel por guardar o status da resposta do banco */ 
@@ -72,6 +74,8 @@ function updateContato($contato){
 
 /** Lista todos os contatos do DB */
 function selectAllContatos(){
+    require_once "modulo/config.php";
+
     $conexao = abrirConexaoMysql();
 
     $sqlQuerry = "select * from tbl_contato order by id_contato desc";
@@ -88,7 +92,8 @@ function selectAllContatos(){
                 "telefone"   => $resData["telefone"],
                 "celular"    => $resData["celular"],
                 "email"      => $resData["email"],
-                "obs"        => $resData["obs"]
+                "obs"        => $resData["obs"],
+                "foto"        => UPLOAD_FILE_DIRECTORY . $resData["foto"],
             );
 
             $cont++;
@@ -125,6 +130,8 @@ function deleteContato($id){
  * @return  contato
  */
 function selectContatoById($id) {
+    require_once "modulo/config.php";
+    
     $conexao = abrirConexaoMysql();
 
     $sqlQuery = "select * from tbl_contato where id_contato=$id";
@@ -140,7 +147,8 @@ function selectContatoById($id) {
                 "telefone"   => $resData["telefone"],
                 "celular"    => $resData["celular"],
                 "email"      => $resData["email"],
-                "obs"        => $resData["obs"]
+                "obs"        => $resData["obs"],
+                "foto"       => UPLOAD_FILE_DIRECTORY.$resData["foto"]
             );
         }
 

@@ -1,5 +1,9 @@
 <?php
 
+/** carrega o nome da fotodo banco de dados */
+$foto = (string) null;
+
+
 $actionFormCadastro = (string) "router.php?component=contatos&action=inserir";
 
 // verifica se o recurso de variaveis de sessão esta ativado
@@ -13,8 +17,9 @@ if ( session_status()) {
         $celular    =   $_SESSION["dadosContato"]["celular"];
         $email      =   $_SESSION["dadosContato"]["email"];
         $obs        =   $_SESSION["dadosContato"]["obs"];
+        $foto       =   $_SESSION["dadosContato"]["foto"];
 
-        $actionFormCadastro = "router.php?component=contatos&action=editar&id=$id";
+        $actionFormCadastro = "router.php?component=contatos&action=editar&id=$id&foto=$foto";
 
         //destroy uma variavel
         unset($_SESSION["dadosContato"]);
@@ -96,6 +101,10 @@ if ( session_status()) {
                         </div>
                     </div>
                     
+                    <div class="campos">
+                        <img src="<?= $foto ?>" alt="foto do contato" class="contato-img">
+                    </div>
+
                     <div class="enviar">
                         <div class="enviar">
                             <input type="submit" name="btnEnviar" value="Salvar">
@@ -115,6 +124,7 @@ if ( session_status()) {
                     <td class="tblColunas destaque"> Nome </td>
                     <td class="tblColunas destaque"> Celular </td>
                     <td class="tblColunas destaque"> Email </td>
+                    <td class="tblColunas destaque"> Foto </td>
                     <td class="tblColunas destaque"> Opções </td>
                 </tr>
                 
@@ -127,12 +137,14 @@ if ( session_status()) {
                     
                     // retira os dados do array $listContato e printa na tela
                     foreach($listContato as $item) {
+                        $foto = $item["foto"];
                 ?>               
 
                 <tr id="tblLinhas">
                 <td class="tblColunas registros"><?= $item["nome"] ?></td>
                     <td class="tblColunas registros"><?= $item["celular"] ?></td>
                     <td class="tblColunas registros"><?= $item["email"] ?></td>
+                    <td class="tblColunas registros"><img src="<?= $foto ?>" class="foto"alt="img"></td>
                    
                     <td class="tblColunas registros">
                         <a href="router.php?component=contatos&action=buscar&id=<?= $item["id"] ?>">
@@ -140,7 +152,7 @@ if ( session_status()) {
                         </a>                            
 
                         <a onclick="return confirm('Deseja mesmo excluir o contato?')" 
-                            href="router.php?component=contatos&action=deletar&id=<?= $item["id"] ?>">
+                            href="router.php?component=contatos&action=deletar&id=<?= $item["id"] ?>&foto=<?= $foto ?>">
                             <img src="img/trash.png" alt="Excluir" title="Excluir" class="excluir">
                         </a>
 
