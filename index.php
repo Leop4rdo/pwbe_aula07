@@ -1,7 +1,18 @@
 <?php
+/*==================================================*\                                                 
+ *
+ * Arquivo responsavel por manipular os dados       
+ * dentro do bd (insert, update, select e delete)   
+ *                                                  
+ * Autor    :   Leonardo                            
+ * Data     :   11/03/22                            
+ * Versão   :   1.0                                 
+ *                                                 
+\*==================================================*/
 
 /** carrega o nome da fotodo banco de dados */
 $foto = (string) null;
+$idEstado = (string) null;
 
 
 $actionFormCadastro = (string) "router.php?component=contatos&action=inserir";
@@ -18,6 +29,7 @@ if ( session_status()) {
         $email      =   $_SESSION["dadosContato"]["email"];
         $obs        =   $_SESSION["dadosContato"]["obs"];
         $foto       =   $_SESSION["dadosContato"]["foto"];
+        $idEstado   =   $_SESSION["dadosContato"]["idEstado"];
 
         $actionFormCadastro = "router.php?component=contatos&action=editar&id=$id&foto=$foto";
 
@@ -26,6 +38,21 @@ if ( session_status()) {
     }
 
     
+}
+
+function renderOptionsEstados($idEstado) {
+    $options = "";
+
+    require_once "./controller/controllerEstados.php";
+
+    $estados = listarEstados();
+
+    foreach ($estados as $estado) {
+        $selected =  ($estado["id"] == $idEstado) ? "selected" : null;
+        $options .= "<option value='". $estado["id"]. "' ". $selected .">". $estado["nome"]. "</option>";
+    }
+
+    return $options;
 }
 
 ?>
@@ -56,13 +83,25 @@ if ( session_status()) {
                                 value="<?= isset($nome)?$nome:null ?>" placeholder="Digite seu Nome" maxlength="100">
                         </div>
                     </div>
+
+                    <div class="campos">
+                        <div class="cadastroInformacoesPessoais">
+                            <label> Nome: </label>
+                        </div>
+                        <div class="cadastroEntradaDeDados">
+                            <select name="sltEstado">
+                                <option value="">Selecione um item</option>
+                                <?= renderOptionsEstados($idEstado) ?>
+                            </select>
+                        </div>
+                    </div>
                                      
                     <div class="campos">
                         <div class="cadastroInformacoesPessoais">
                             <label> Telefone: </label>
                         </div>
                         <div class="cadastroEntradaDeDados">
-                        <input autocomplete="off" type="tel" name="txtTelefone" value="<?= isset($telefone)?$telefone:null ?>">
+                            <input autocomplete="off" type="tel" name="txtTelefone" value="<?= isset($telefone)?$telefone:null ?>">
                         </div>
                     </div>
                     <div class="campos">
@@ -89,7 +128,7 @@ if ( session_status()) {
                         </div>
                         <div class="cadastroEntradaDeDados">
                             
-                            <input type="file" name="fileFoto" accept=".jpg, .jpeg, .png, .gif,">
+                            <input type="file" name="fileFoto" value="<?= isset($foto)? $foto : null ?>"accept=".jpg, .jpeg, .png, .gif,">
                         </div>
                     </div>
                     <div class="campos">

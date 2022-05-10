@@ -18,12 +18,13 @@ function insertContato($dadosContato) {
     $conexao = abrirConexaoMysql();
 
     // montando instrução sql que será executada para inserir um contato no DB
-    $sqlQuerry = "insert into tbl_contato (nome, telefone, celular, email, obs, foto) 
+    $sqlQuerry = "insert into tbl_contato (nome, telefone, celular, email, obs, id_estado, foto) 
 	                values ('". $dadosContato["nome"] ."', 
                         '". $dadosContato["telefone"] ."', 
                         '". $dadosContato["celular"] ."', 
                         '". $dadosContato["email"] ."', 
                         '". $dadosContato["obs"] ."',
+                        '". $dadosContato["idEstado"] ."',
                         '". $dadosContato["foto"]."');";
     
     /** responsavel por guardar o status da resposta do banco */ 
@@ -31,11 +32,12 @@ function insertContato($dadosContato) {
 
     // executa uma instrução no bd verificando se ela esta correta
     if ( mysqli_query($conexao, $sqlQuerry) ) {
+
+        
         if ( mysqli_affected_rows($conexao) ) {
             $statusRes = true;
         }
     }
-
 
     fecharConexaoMysql($conexao); // fechando conexão
 
@@ -53,9 +55,10 @@ function updateContato($contato){
                     celular     =   '". $contato["celular"] ."', 
                     email       =   '". $contato["email"] ."',
                     obs         =   '". $contato["obs"] ."',
-                    foto        =   '". $contato["foto"] ."'
+                    foto        =   '". $contato["foto"] ."',
+                    id_estado   =   ". $contato["idEstado"] ."
                     where id_contato=". $contato["id"];
-    
+
     /** responsavel por guardar o status da resposta do banco */ 
     $statusRes = (boolean) false;
 
@@ -93,7 +96,8 @@ function selectAllContatos(){
                 "celular"    => $resData["celular"],
                 "email"      => $resData["email"],
                 "obs"        => $resData["obs"],
-                "foto"        => UPLOAD_FILE_DIRECTORY . $resData["foto"],
+                "foto"       => UPLOAD_FILE_DIRECTORY . $resData["foto"],
+                "estado"     => $resData["id_estado"]
             );
 
             $cont++;
@@ -139,7 +143,6 @@ function selectContatoById($id) {
     $res = mysqli_query($conexao, $sqlQuery);
 
     if ( $res ) {
-
         if ($resData = mysqli_fetch_assoc($res)) {
             $resArray = array(
                 "id"         => $resData["id_contato"],
@@ -148,7 +151,8 @@ function selectContatoById($id) {
                 "celular"    => $resData["celular"],
                 "email"      => $resData["email"],
                 "obs"        => $resData["obs"],
-                "foto"       => UPLOAD_FILE_DIRECTORY.$resData["foto"]
+                "foto"       => UPLOAD_FILE_DIRECTORY.$resData["foto"],
+                "idEstado"   => $resData["id_estado"]
             );
         }
 

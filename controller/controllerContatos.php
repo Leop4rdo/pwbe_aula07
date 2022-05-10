@@ -22,7 +22,7 @@ function inserirContato( $dadosContato, $file ){
     if ( !empty($dadosContato) ) {
 
         // verifica se os campos obrigatorios foram preenchidos, não permitindo a execução caso não foram
-        if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"]) ) {
+        if ( !empty($dadosContato["txtNome"]) && !empty($dadosContato["txtCelular"]) && !empty($dadosContato["txtEmail"]) && !empty($dadosContato["sltEstado"]) ) {
             
             // identificando se um arquivo foi enviado para upload
             if ($file["fileFoto"]["name"] != null) {
@@ -42,6 +42,7 @@ function inserirContato( $dadosContato, $file ){
                 "celular"   => $dadosContato["txtCelular"],
                 "email"     => $dadosContato["txtEmail"],
                 "obs"       => $dadosContato["txtObs"], 
+                "idEstado"  => $dadosContato["sltEstado"],
                 "foto"      => $imgName
             );
             
@@ -78,6 +79,7 @@ function atualizarContato($dadosContato, $body){
     $id     =   $body["id"];
     $foto   =   $body["foto"];
     $file   =   $body["file"];
+    $isUpdatingImg = false;
 
     // impede a execução desta função quando $dadosContato for vazio
     if ( !empty($dadosContato) ) {
@@ -95,7 +97,7 @@ function atualizarContato($dadosContato, $body){
                     // se o retorno da função uploadFile() for uma mensagem de erro:
                     if ( is_array($newImgName) ) return $newImgName;    
 
-                    @unlink($foto);
+                    $isUpdatingImg = true;
                 } else {
                     $newImgName = $foto;
                 }
@@ -108,15 +110,17 @@ function atualizarContato($dadosContato, $body){
                     "celular"   => $dadosContato["txtCelular"],
                     "email"     => $dadosContato["txtEmail"],
                     "obs"       => $dadosContato["txtObs"] ,
+                    "idEstado"  => $dadosContato["sltEstado"],
                     "foto"      => $newImgName
                 );
-
 
                 // import do arquivo de modelagem para manipular o BD
                 require_once("model/bd/contato.php");
 
                 // Chama a função que fara o insert no BD apartir da camada Model
                 if ( updateContato($contato) ) {
+                    if ($isUpdatingImg) unlink($foto);
+
                     return true;
                 } else {
                     // retornando mensagem de erro
