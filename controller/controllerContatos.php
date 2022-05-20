@@ -12,6 +12,8 @@
 /////////////////////////////////////////////////////
 
 
+require_once "../modulo/config.php";
+
 /**
  * Inserir novos contatos atravez dos dados recebidos pela view
  */
@@ -26,7 +28,7 @@ function inserirContato( $dadosContato, $file ){
             
             // identificando se um arquivo foi enviado para upload
             if ($file["fileFoto"]["name"] != null) {
-                require_once "modulo/uploadFile.php";
+                require_once SRC."modulo/uploadFile.php";
 
                 $imgName = uploadFile($file["fileFoto"]);
 
@@ -49,7 +51,7 @@ function inserirContato( $dadosContato, $file ){
 
 
             // import do arquivo de modelagem para manipular o BD
-            require_once("model/bd/contato.php");
+            require_once SRC."model/bd/contato.php";
 
             // Chama a função que fara o insert no BD apartir da camada Model
             if ( insertContato($contato) ) {
@@ -90,7 +92,7 @@ function atualizarContato($dadosContato, $body){
 
                 // identificando se um arquivo foi enviado para upload
                 if ($file["fileFoto"]["name"] != null) {
-                    require_once "modulo/uploadFile.php";
+                    require_once SRC."modulo/uploadFile.php";
 
                     $newImgName = uploadFile($file["fileFoto"]);
 
@@ -115,7 +117,7 @@ function atualizarContato($dadosContato, $body){
                 );
 
                 // import do arquivo de modelagem para manipular o BD
-                require_once("model/bd/contato.php");
+                require_once SRC."model/bd/contato.php";
 
                 // Chama a função que fara o insert no BD apartir da camada Model
                 if ( updateContato($contato) ) {
@@ -190,7 +192,7 @@ function excluirContato($body){
  * Solicita os dados de contato da model e encaminha para a view
  */
 function listarContato(){
-    require_once("model/bd/contato.php"); // importando model de contatos
+    require_once SRC."model/bd/contato.php"; // importando model de contatos
     
     $res = selectAllContatos();
 
@@ -211,7 +213,7 @@ function buscarContato($id) {
         );
     }    
 
-    require_once("model/bd/contato.php");
+    require_once SRC."model/bd/contato.php";
 
     $res =  selectContatoById($id);
     

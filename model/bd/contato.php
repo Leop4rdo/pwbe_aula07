@@ -77,7 +77,7 @@ function updateContato($contato){
 
 /** Lista todos os contatos do DB */
 function selectAllContatos(){
-    require_once "modulo/config.php";
+    require_once SRC."modulo/config.php";
 
     $conexao = abrirConexaoMysql();
 
@@ -134,7 +134,7 @@ function deleteContato($id){
  * @return  contato
  */
 function selectContatoById($id) {
-    require_once "modulo/config.php";
+    require_once SRC."modulo/config.php";
     
     $conexao = abrirConexaoMysql();
 
